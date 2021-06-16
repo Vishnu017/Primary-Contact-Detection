@@ -30,9 +30,10 @@ def home():
     if request.method=="POST":
 
 
-        id = request.form.get("name")
-        shop_id = request.form.get("shop_id")
-
+        id = request.args.get("pid")
+        shop_id = request.args.get("shop_id")
+        print(shop_id)
+        print(id)
         return is_blacklist(id,shop_id)
 
 
@@ -61,10 +62,13 @@ def hello_name():
 
 @app.route('/Face_recog',methods=["POST","GET"])
 def Get_faceid():
-    shp_id=4004
+    shp_id=request.args.get("shop_id")
+    print(shp_id)
     name=Face_recog_function()
     pid=name.split("_")[0]
+    
     print(pid)
+    print(shp_id)
     print(name)
     return redirect(url_for("home",pid=pid,sid=shp_id),code=307)
 
@@ -81,10 +85,14 @@ def send_mail():
     for usr in usrs:
         print(usr)
         person=Main_Table.query.filter(Main_Table.id==usr).first()
+        print(person.email)
+        print(type(person.email))
+        print(person.person_name)
+
         if person.id not in sent_people:
             msg = Message('Hello', sender = 'tstflask@gmail.com', recipients = [person.email])
-            msg.body = f"Hello {person.person_name} \n  U have been Affected"
-            print("asq")
+            msg.body = f"""Dear {person.person_name},\nYou are a primary contact.Please stay inside your homes and follow the instructions provided by the health officials.\nFor further information contact\nhttps://www.mohfw.gov.in/ """
+            
             mail.send(msg)
             sent_people.append(person.id)
 
@@ -118,9 +126,10 @@ def uploadphoto():
 
     else:
         img = request.get_json()
-        im = Image.open(BytesIO(base64.b64decode(img['charge'])))
-        im.save('image.png', 'PNG')
-        return redirect(url_for("Get_faceid"))
+        sh_id=img['sid']
+        im = Image.open(BytesIO(base64.b64decode(img['id'])))
+        im.save('api/image.png', 'PNG')
+        return redirect(url_for("Get_faceid",shop_id=sh_id))
         
 
     

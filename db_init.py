@@ -3,8 +3,8 @@ from datetime import datetime,timedelta
 
 import random as r
 
-from flask_file import db
-from flask_file.models import Main_Table,Visitor_List,Blacklist,Shop_Details
+from api import db
+from api.models import Main_Table,Visitor_List,Blacklist,Shop_Details
 
 
 

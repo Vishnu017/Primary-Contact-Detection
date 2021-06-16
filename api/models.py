@@ -1,6 +1,17 @@
 from api import db
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask_login import UserMixin
+import pytz    
+import tzlocal 
+
+def changetoist(utc_time):
+    local_timezone = tzlocal.get_localzone()
+    #print(local_timezone)
+    utc_time = utc_time.replace(tzinfo=pytz.utc).astimezone(local_timezone)
+    utc_time = utc_time.replace(tzinfo = None)
+    return utc_time
+
 
 
 #from sqlalchemy.dialects.postgresql import JSON
@@ -10,8 +21,8 @@ class Main_Table(db.Model):
     __tablename__ = 'main_table'
 
     id = db.Column(db.Integer, primary_key=True)
-    person_name = db.Column(db.String())
-    email = db.Column(db.String(20))
+    person_name = db.Column(db.String(20))
+    email = db.Column(db.String(40))
 
     #backref creates a virtual column on the child class where it refers back to the parent.
     visitors = db.relationship('Visitor_List', backref='person')
@@ -57,7 +68,7 @@ class Visitor_List(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     person_id = db.Column(db.Integer,db.ForeignKey('main_table.id'))
     shop_id = db.Column(db.Integer, db.ForeignKey('shop_details.shop'))
-    time_stamp = db.Column(db.DateTime,default=datetime.utcnow)
+    time_stamp = db.Column(db.DateTime,default=changetoist(datetime.utcnow()))
 
     def __init__(self, *args):
 
@@ -84,7 +95,7 @@ class Blacklist(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     person_id = db.Column(db.Integer, db.ForeignKey('main_table.id'))
-    time_stamp = db.Column(db.DateTime, default=datetime.utcnow)
+    time_stamp = db.Column(db.DateTime, default=changetoist(datetime.utcnow()))
 
 
 
@@ -107,5 +118,19 @@ class Blacklist(db.Model):
 
 
 
+
+
+class HealthUser(UserMixin, db.Model):
+    __tablename__ = 'health_official'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+    name = db.Column(db.String(100))
+
+
+    def __init__(self,email,password,name):
+        self.email=email
+        self.password=password
+        self.name=name
 
 

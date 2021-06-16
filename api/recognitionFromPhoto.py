@@ -10,10 +10,13 @@ def Face_recog_function():
     # load the harcaascade in the cascade classifier
     faceCascade = cv2.CascadeClassifier(cascPathface)
     # load the known faces and embeddings saved in last file
-    data = pickle.loads(open('face_enc', "rb").read())
+    
     #Find path to the image you want to detect face and pass it here
 
-    image = cv2.imread(os.path.join(dirname, "Brad_Pitt.jpg"))
+    image = cv2.imread(os.path.join(dirname, 'image.png'))
+    image = cv2.rotate(image, cv2.cv2.ROTATE_90_CLOCKWISE)
+    file=open(os.path.join(dirname,'face_enc'),"rb")
+    data = pickle.loads(file.read())
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     #convert image to Greyscale for haarcascade
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -25,6 +28,8 @@ def Face_recog_function():
     
     # the facial embeddings for face in input
     encodings = face_recognition.face_encodings(rgb)
+    print(len(encodings))
+    print(len(data))
     names = []
     # loop over the facial embeddings incase
     # we have multiple embeddings for multiple fcaes
@@ -54,7 +59,7 @@ def Face_recog_function():
     
             # update the list of names
             names.append(name)
-            
-    return name
+    print(names)       
+    return names[0]
 
 

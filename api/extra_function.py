@@ -1,5 +1,7 @@
 from datetime import datetime,timedelta
-
+import pytz    
+import tzlocal 
+import csv
 
 from api.models import Main_Table,Visitor_List,Blacklist
 from api import db
@@ -47,7 +49,7 @@ def add_to_primary(lst):
 
         check= Blacklist.query.filter(Blacklist.person_id==usr).first()
         if check:
-            check.time_stamp=datetime.utcnow()
+            check.time_stamp=changetoist(datetime.utcnow())
             db.session.commit()
             continue
         usr=Blacklist(usr)
@@ -108,9 +110,40 @@ def add_visitor(id,shop_id):
 def is_blacklist(id,shop_id):
     ans=Blacklist.query.filter_by(person_id=id).first()
 
+    
+
     if ans == None:
-
+    
         add_visitor(id,shop_id)
-        return "Not positive ..added To Visitor Table"
+        return "True"
 
-    return ("Is positive")
+    return "False"
+
+
+
+def csv_reader(x):
+    lst=[]
+    print()
+    with open(x, 'r') as f:
+        reader = csv.reader(f)
+        next(reader)
+        for row in reader:
+            lst.append(row)
+    
+    
+    mail_lst=HealthAdd(lst)
+    print("mail_lst before redirecting")
+
+    print(mail_lst)
+    return mail_lst
+
+
+
+
+
+def changetoist(utc_time):
+    local_timezone = tzlocal.get_localzone()
+    #print(local_timezone)
+    utc_time = utc_time.replace(tzinfo=pytz.utc).astimezone(local_timezone)
+    utc_time = utc_time.replace(tzinfo = None)
+    return utc_time
