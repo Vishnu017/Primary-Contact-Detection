@@ -1,11 +1,11 @@
-from flask import Blueprint, render_template,request,redirect,url_for
+from flask import Blueprint, render_template,request,redirect,url_for,flash
 from flask_login import login_required, current_user
 
 
 import pandas as pd
 from io import StringIO
 
-from .extra_function import  csv_reader
+from .extra_function import  csv_reader,send_mail
 from . import routes
 
 main = Blueprint('main', __name__)
@@ -21,12 +21,24 @@ def profile():
         return render_template('profile.html', name=current_user.name)
 
     if request.method=="POST":
-        x=request.files["csv_file"]
-        y=x.read().decode()
-        with open("file.txt",'w',newline='',) as f:
-            f.write(y)
         
-        mail_lst=csv_reader("file.txt")
+        x=request.files["csv_file"]
+        print(x.filename)
+        print(type(x.filename))
+        print(x.content_type)
+        if x.filename!="" and x.filename.rsplit('.', 1)[1].lower()=='csv':
+            print("enter")
+            y=x.read().decode()
+            with open("file.txt",'w',newline='',) as f:
+                f.write(y)
+            
+            mail_lst=csv_reader("file.txt")
+            print(mail_lst)
+            send_mail(mail_lst)
+            return render_template('sumbit.html', name=current_user.name)
+
+
+
         
         # print(data)
         # print(x.mimetype)
@@ -37,10 +49,12 @@ def profile():
         # elif 'text/csv' != x.mimetype:
         
         #     return "not Csv"
+        else:
+            flash('Please upload a csv file .')
+            return render_template('profile.html', name=current_user.name)
 
 
+         
 
-        return redirect(url_for("send_mail",usrs=mail_lst)) 
-
-        return "done"
+        
 

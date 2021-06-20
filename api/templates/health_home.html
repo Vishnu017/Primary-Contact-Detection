@@ -7,22 +7,22 @@
 
     <!-- <script src="project_jscrpt.js"></script> -->
     <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
     
 
 </head>
 
 <body>
     
-
+    
         <div class="hero-head">
             <nav class="navbar">
-                <div class="container">
-
-                    <div id="navbarMenuHeroA" class="navbar-menu">
+                
+                
+                    <div id="navbarMenuHeroA" class="navbar-menu" class="navback">
                         <div class="navbar-end">
-                            <a href="{{ url_for('main.index') }}" class="navbar-item">
-                                Home
-                            </a>
+                            
+                            
                             {% if current_user.is_authenticated %}
                             <a href="{{ url_for('main.profile') }}" class="navbar-item">
                                 Profile
@@ -41,13 +41,13 @@
                                 Logout
                             </a>
                             {% endif %}
-                            </div>
                         </div>
-                    </div>
+                        
+                    
                 </nav>
             </div>
-    <div class="background">
         
+            <div class="background">
             <div class="container">
             <div class="screen">
                 <div class="screen-header">

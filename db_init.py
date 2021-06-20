@@ -6,9 +6,8 @@ import random as r
 from api import db
 from api.models import Main_Table,Visitor_List,Blacklist,Shop_Details
 
+# explain analyse select * from main_table;
 
-
-# DROP TABLE "positive_list";
 # DROP TABLE "blacklist";
 # DROP TABLE "shops";
 # DROP TABLE "visitor_list";
@@ -66,9 +65,9 @@ loc=["Kochi","thrik","pal"]
 
 def get_timestamp():
 
-    hr=r.randint(0,2)
-    ds=r.randint(0,2)
-    mn=r.randint(0,30)
+    hr=r.randint(0,5)
+    ds=r.randint(0,4)
+    mn=r.randint(0,45)
     dt=datetime.utcnow()
 
     fut=dt+timedelta(hours = hr)+timedelta(days=ds)+timedelta(minutes=mn)
@@ -95,7 +94,7 @@ for i in range(len(shops)):
 
 #TO add to Visitor List
 
-for _ in range(20):
+for _ in range(80):
     id=r.randint(1,len(lst))
     sp_id=r.choice(shops)
 

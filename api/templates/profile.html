@@ -4,6 +4,14 @@
 
 
 {% block content %}
+
+{% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="notification is-danger">
+                {{ messages[0] }}
+            </div>
+        {% endif %}
+        {% endwith %}
 <form method="POST" action="?" enctype="multipart/form-data">
 <div class="app-form-group">
   <input class="app-form-control" type="file" name="csv_file">
@@ -11,7 +19,7 @@
 <div class="app-form-group buttons">
   <button class="app-form-button">CLEAR</button>
   
-  <input class="app-form-button" type="submit" value="submit">
+  <input class="app-form-button" type="submit" value="SUBMIT">
   
 </div>
 </form>

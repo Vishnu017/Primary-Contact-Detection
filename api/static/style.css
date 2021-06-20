@@ -18,9 +18,13 @@
   
   .background {
     display: flex;
-    min-height: 100vh;
+    min-height: 94.6vh;
   }
-  
+ .navback{
+   background-color: #3e3e3e;
+   
+ }
+ 
   .container {
     flex: 0 1 700px;
     margin: auto;
@@ -31,6 +35,7 @@
     position: relative;
     background: #3e3e3e;
     border-radius: 15px;
+    margin-top: 48%;
   }
   
   .screen:after {
@@ -155,6 +160,12 @@
     text-align: right;
   }
   
+
+  .sumbit{
+
+    color:#ddd;
+
+  }
   .app-form-control {
     width: 100%;
     padding: 10px 0;

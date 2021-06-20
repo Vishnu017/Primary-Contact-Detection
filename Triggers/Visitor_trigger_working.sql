@@ -8,7 +8,7 @@ END;
 
 
 CREATE TRIGGER trigger_delete_old_rows
-    BEFORE INSERT or update ON "visitor_list"
+    BEFORE INSERT or update ON "blacklist"
     EXECUTE PROCEDURE DeleteOldRowVisitor();
 
 

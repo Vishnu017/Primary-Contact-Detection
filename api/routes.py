@@ -22,17 +22,21 @@ def home():
 
     # return f"{id}{sid}"
     if request.method=="GET":
-        if request.args.get('pid')!=None:
-            return is_blacklist(request.args.get('pid'),request.args.get('sid')  )
+        name=request.args.get('name')
+        if name!=None:
+            pid=Main_Table.query.filter(Main_Table.person_name==name).first().id
+            return is_blacklist(pid,request.args.get('shop_id')  )
         return render_template('home.html')
 
 
     if request.method=="POST":
 
 
-        id = request.args.get("pid")
+        name = request.args.get("id")
         shop_id = request.args.get("shop_id")
         print(shop_id)
+        print(name)
+        id=get_id(name)
         print(id)
         return is_blacklist(id,shop_id)
 
@@ -62,74 +66,88 @@ def hello_name():
 
 @app.route('/Face_recog',methods=["POST","GET"])
 def Get_faceid():
-    shp_id=request.args.get("shop_id")
-    print(shp_id)
+    # shp_id=request.args.get("shop_id")
+    # print(shp_id)
     name=Face_recog_function()
+    if name=="Unknown":
+        return name
     pid=name.split("_")[0]
-    
+    name=name.split("_")[1]
     print(pid)
-    print(shp_id)
-    print(name)
-    return redirect(url_for("home",pid=pid,sid=shp_id),code=307)
-
-
-
-@app.route('/sent_mail',methods=["POST","GET"])
-
-def send_mail():
     
-    usrs=request.args.getlist('usrs')
-    print("Inside Send Mail")
-    sent_people=[]
-    print(type(usrs))
-    for usr in usrs:
-        print(usr)
-        person=Main_Table.query.filter(Main_Table.id==usr).first()
-        print(person.email)
-        print(type(person.email))
-        print(person.person_name)
-
-        if person.id not in sent_people:
-            msg = Message('Hello', sender = 'tstflask@gmail.com', recipients = [person.email])
-            msg.body = f"""Dear {person.person_name},\nYou are a primary contact.Please stay inside your homes and follow the instructions provided by the health officials.\nFor further information contact\nhttps://www.mohfw.gov.in/ """
-            
-            mail.send(msg)
-            sent_people.append(person.id)
-
-    print(sent_people)
-    return "Sent"
+    print(name)
+    # return redirect(url_for("home",pid=pid,sid=shp_id),code=307)
+    return name
 
 
 
-@app.route('/postjson', methods = ['POST','GET'])
-def postJsonHandler():
-    if request.method=="POST":
-        print (request.is_json)
-        content = request.get_json()
-        print (content)
-        lst=[]
-        for ele in content['id']:
-            lst.append((ele['id'],ele['name']))
-        print(lst)
-        mail_lst=HealthAdd(lst)
-        print("mail_lst before redirecting")
+# @app.route('/sent_mail',methods=["POST","GET"])
 
-        print(mail_lst)
-        return redirect(url_for("send_mail",usrs=mail_lst))    
+# def send_mail():
+    
+#     usrs=request.args.getlist('usrs')
+#     print("Inside Send Mail")
+#     sent_people=[]
+#     print(type(usrs))
+#     with mail.connect() as conn:
+#         for usr in usrs:
+#             print(usr)
+#             person=Main_Table.query.filter(Main_Table.id==usr).first()
+#             print(person.email)
+#             print(type(person.email))
+#             print(person.person_name)
+
+#             if person.id not in sent_people:
+#                 msg = Message('Primary Contact', sender = 'tstflask@gmail.com', recipients = [person.email])
+#                 msg.body = f"""Dear {person.person_name},\nYou are a primary contact.Please stay inside your homes and follow the instructions provided by the health officials.\nFor further information contact\nhttps://www.mohfw.gov.in/ """
+                
+#                 conn.send(msg)
+#                 sent_people.append(person.id)
+
+#     print(sent_people)
+#     return "Sent"
 
 
 
-@app.route('/upload', methods=['POST','GET'])
+# @app.route('/postjson', methods = ['POST','GET'])
+# def postJsonHandler():
+#     if request.method=="POST":
+#         print (request.is_json)
+#         content = request.get_json()
+#         print (content)
+#         lst=[]
+#         for ele in content['id']:
+#             lst.append((ele['id'],ele['name']))
+#         print(lst)
+#         mail_lst=HealthAdd(lst)
+#         print("mail_lst before redirecting")
+
+#         print(mail_lst)
+#         return redirect(url_for("send_mail",usrs=mail_lst))    
+
+
+
+@app.route('/uploadPhoto', methods=['POST','GET'])
 def uploadphoto():
     if request.method=="GET":
         return jsonify({'queerks' : quarks})
 
     else:
         img = request.get_json()
-        sh_id=img['sid']
+        # sh_id=img['sid']
         im = Image.open(BytesIO(base64.b64decode(img['id'])))
         im.save('api/image.png', 'PNG')
-        return redirect(url_for("Get_faceid",shop_id=sh_id))
+        return redirect(url_for("Get_faceid"))
         
 
-    
+@app.route('/uploadData', methods=['POST','GET'])
+def update():
+    if request.method=="GET":
+        pass
+    else:
+        person = request.get_json()
+        name=person['name']
+        sid=person["sid"]
+        print(person,name)
+        return redirect(url_for("home",shop_id=sid,name=name))
+        
