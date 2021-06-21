@@ -20,11 +20,11 @@ def Face_recog_function():
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     #convert image to Greyscale for haarcascade
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    faces = faceCascade.detectMultiScale(gray,
-                                        scaleFactor=1.1,
-                                        minNeighbors=5,
-                                        minSize=(60, 60),
-                                        flags=cv2.CASCADE_SCALE_IMAGE)
+    # faces = faceCascade.detectMultiScale(gray,
+    #                                     scaleFactor=1.1,
+    #                                     minNeighbors=5,
+    #                                     minSize=(60, 60),
+    #                                     flags=cv2.CASCADE_SCALE_IMAGE)
     
     # the facial embeddings for face in input
     encodings = face_recognition.face_encodings(rgb)
@@ -59,7 +59,9 @@ def Face_recog_function():
     
             # update the list of names
             names.append(name)
-    print(names)       
-    return names[0]
-
+        
+    print(names)
+    if len(names)>0:       
+        return max(names, key = names.count)
+    return "Unknown"
 
