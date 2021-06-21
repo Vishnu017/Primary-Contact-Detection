@@ -6,7 +6,7 @@ using System.IO;
 
 public class CameraScript : MonoBehaviour
 {
-    public int fileCounter;
+    
     sendimg ig;
     static WebCamTexture backCam;
 
