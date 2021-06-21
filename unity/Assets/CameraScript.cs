@@ -55,7 +55,7 @@ public class CameraScript : MonoBehaviour
         //Write out the PNG. Of course you have to substitute your_path for something sensible
         //    File.WriteAllBytes("D:\\project\\camera\\Assets\\New folder\\photo0.png", bytes);
         //  File.WriteAllBytes("C: \\Users\\User\\Desktop\\New folder\\photo1.png", bytes);
-        fileCounter++;
+        
     }
 
     public void RoutineWrap()
