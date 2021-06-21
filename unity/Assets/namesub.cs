@@ -16,7 +16,6 @@ public class namesub : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-       
     }
 
 
@@ -38,10 +37,12 @@ public class namesub : MonoBehaviour
         info val = new info();
         val.name = ip.text;
         val.sid = intermediate.shopid;
-       
-        
+
+        intermediate.name = ip.text;
+
+
         string json = JsonUtility.ToJson(val);
-        StartCoroutine(PostRequest("http://192.168.18.5:5000/newinfo", json));
+        StartCoroutine(PostRequest("http://192.168.1.123:5000/uploadData", json));
     }
 
     IEnumerator PostRequest(string url, string json)
@@ -62,7 +63,16 @@ public class namesub : MonoBehaviour
         else
         {
             Debug.Log("Received: " + uwr.downloadHandler.text);
+            if (uwr.downloadHandler.text == "True")
+            {
+                intermediate.status = "MAY ENTER";
+            }
+            else
+            {
+                intermediate.status = "CANNOT ENTER";
+            }
         }
+        SceneManager.LoadScene("exit");
     }
     // Update is called once per frame
     void Update()

@@ -7,48 +7,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
-
 using UnityEngine.Networking;
 
-public class sendimg : MonoBehaviour
+public class sendname : MonoBehaviour
 {
-
-
+    // Start is called before the first frame update
     void Start()
     {
- 
+        
     }
-
-    public void startrout()
+    public void senddata()
     {
         PostData();
     }
-   
+
 
     [Serializable]
-    public class imageinfo
+    public class info
     {
         public string name;
-        public string id;
-       /// public string sid;
+        public string sid;
     }
 
     public void PostData()
     {
-        byte[] imageArray = System.IO.File.ReadAllBytes(Application.persistentDataPath + "/"+ "photo0.png");
-        string base64ImageRepresentation = Convert.ToBase64String(imageArray);
+        info val = new info();
+        val.name = intermediate.name;
+        val.sid = intermediate.shopid;
 
-        Debug.Log(base64ImageRepresentation);
-
-
-        imageinfo val = new imageinfo();
-        val.name = "image";
-        val.id = base64ImageRepresentation;
-        //val.sid = intermediate.shopid;
 
         string json = JsonUtility.ToJson(val);
-        StartCoroutine(PostRequest("http://192.168.1.123:5000/uploadPhoto", json));
+        StartCoroutine(PostRequest("http://192.168.1.123:5000/uploadData", json));
     }
 
     IEnumerator PostRequest(string url, string json)
@@ -69,17 +58,21 @@ public class sendimg : MonoBehaviour
         else
         {
             Debug.Log("Received: " + uwr.downloadHandler.text);
-
-            if (uwr.downloadHandler.text == "Unknown")
+            if(uwr.downloadHandler.text=="True")
             {
-                SceneManager.LoadScene("namechange");
+                intermediate.status = "MAY ENTER";
             }
             else
             {
-                intermediate.name = uwr.downloadHandler.text;
-                SceneManager.LoadScene("enter");
+                intermediate.status = "CANNOT ENTER";
             }
-
         }
+        SceneManager.LoadScene("exit");
+
     }
- }
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+}
