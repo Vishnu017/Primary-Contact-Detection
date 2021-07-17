@@ -42,25 +42,25 @@ def home():
 
 
 
-@app.route('/Health_Official',methods=["POST","GET"])
-def hello_name():
+# @app.route('/Health_Official',methods=["POST","GET"])
+# def hello_name():
 
 
-    if request.method=="GET":
-        return render_template("health.html")
+#     if request.method=="GET":
+#         return render_template("health.html")
 
 
 
 
-    if request.method=="POST":
+#     if request.method=="POST":
 
-        lst = request.form.get("name[]")
-        ans=[]
-        for ele in lst:
-            ans.append(is_blacklist(ele,1001))
+#         lst = request.form.get("name[]")
+#         ans=[]
+#         for ele in lst:
+#             ans.append(is_blacklist(ele,1001))
 
 
-        return ans
+#         return ans
 
 
 
@@ -78,6 +78,9 @@ def Get_faceid():
     print(name)
     # return redirect(url_for("home",pid=pid,sid=shp_id),code=307)
     return name
+
+
+    
 
 
 
@@ -135,6 +138,7 @@ def uploadphoto():
     else:
         img = request.get_json()
         # sh_id=img['sid']
+        #Decoding the image
         im = Image.open(BytesIO(base64.b64decode(img['id'])))
         im.save('api/image.png', 'PNG')
         return redirect(url_for("Get_faceid"))

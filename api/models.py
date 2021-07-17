@@ -10,6 +10,7 @@ def changetoist(utc_time):
     #print(local_timezone)
     utc_time = utc_time.replace(tzinfo=pytz.utc).astimezone(local_timezone)
     utc_time = utc_time.replace(tzinfo = None)
+    
     return utc_time
 
 
@@ -62,6 +63,8 @@ class Shop_Details(db.Model):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
+
+
 class Visitor_List(db.Model):
     __tablename__ = 'visitor_list'
 
@@ -80,6 +83,7 @@ class Visitor_List(db.Model):
         elif len(args)==2:
             self.person_id = args[0]
             self.shop_id =  args[1]
+            self.time_stamp=changetoist(datetime.utcnow())
 
         else:
             print("error")
@@ -108,6 +112,7 @@ class Blacklist(db.Model):
 
         elif len(args)==1:
             self.person_id = args[0]
+            self.time_stamp=changetoist(datetime.utcnow())
 
 
         else:

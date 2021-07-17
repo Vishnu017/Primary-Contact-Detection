@@ -13,6 +13,7 @@ from api.models import Main_Table,Visitor_List,Blacklist,Shop_Details
 # DROP TABLE "visitor_list";
 # DROP TABLE "shop_details";
 # DROP TABLE "main_table";
+# DROP TABLE "health_official";
 
 
 lst=["Akshay Kumar",
@@ -70,7 +71,7 @@ def get_timestamp():
     mn=r.randint(0,45)
     dt=datetime.utcnow()
 
-    fut=dt+timedelta(hours = hr)+timedelta(days=ds)+timedelta(minutes=mn)
+    fut=dt-timedelta(hours = hr)-timedelta(days=ds)-timedelta(minutes=mn)
 
     return fut
     
@@ -94,11 +95,22 @@ for i in range(len(shops)):
 
 #TO add to Visitor List
 
-for _ in range(80):
-    id=r.randint(1,len(lst))
+tmp=[]
+for _ in range(60):
+    tmp.append(get_timestamp())
+    
+timelst=sorted(tmp)
+
+
+for i in range(60):
+
+
+
+    
+    id=r.randint(2,len(lst))
     sp_id=r.choice(shops)
 
-    usr=Visitor_List(id,sp_id,get_timestamp())
+    usr=Visitor_List(id,sp_id,timelst[i])
     db.session.add(usr)
     db.session.commit()
 

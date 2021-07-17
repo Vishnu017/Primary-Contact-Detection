@@ -10,15 +10,22 @@ from api import mail
 
 def HealthAdd(lst):
     mail_lst=[]
-    lst=[id for id,ele in lst]
-    add_to_primary(lst)
-    for ele in lst:
-        tmp=get_time(ele)
-        mail_lst.extend(tmp)
+    try:
+        lst=[get_id(ele) for id,ele in lst]
+        add_to_primary(lst,0)
+        blacklst=Blacklist.query.all()
+        print(blacklst)
+        for ele in lst:
+            tmp=get_time(ele,blacklst)
+            mail_lst.extend(tmp)
 
-    print("exit HealthADd")
-    return mail_lst
-    
+        print("exit HealthADd")
+        return mail_lst
+
+    except Exception as e:
+        print(e)
+        return "error"
+        
 
 
 
@@ -45,40 +52,65 @@ def get_id(name):
 
 
 
-def add_to_primary(lst):
-    for usr in lst:
+def add_to_primary(lst,flag):
+    if flag==0:
+        for usr in lst:
+            #Health people adding primary contacts
 
-
-        check= Blacklist.query.filter(Blacklist.person_id==usr).first()
-        if check:
-            check.time_stamp=changetoist(datetime.utcnow())
+            check= Blacklist.query.filter(Blacklist.person_id==usr).first()
+            if check:
+                check.time_stamp=changetoist(datetime.utcnow())
+                db.session.commit()
+                continue
+            usr=Blacklist(usr)
+            db.session.add(usr)
             db.session.commit()
-            continue
-        usr=Blacklist(usr)
-        db.session.add(usr)
-        db.session.commit()
-        
+            
+                
+
+
+    if flag ==1:
+        for usr in lst:
+    
+            #shortlist function  adding primary contacts
+
+            check= Blacklist.query.filter(Blacklist.person_id==usr.person_id).first()
+            
+            if check == None:
+                usr=Blacklist(usr.person_id,usr.time_stamp)
+                db.session.add(usr)
+                db.session.commit()
+
+            else:
+                if usr.time_stamp>check.time_stamp:
+                    check.time_stamp=usr.time_stamp
+                    db.session.commit()
+
+                
+            
 
 
 
 
-
-def short_list(fut,pas,id,s_id):
-    print("Start ...entry")
+def short_list(fut,pas,id,s_id,blacklst):
+    # print("Start ...entry")
+    blacklst=[usr.person_id for usr in blacklst]
     usrs=Visitor_List.query.filter((Visitor_List.person_id!=id)&(Visitor_List.shop_id==s_id ) & (Visitor_List.time_stamp>=pas ) & (Visitor_List.time_stamp<=fut)).all()
-    print(usrs)
+    
     if usrs==None:
         print("no entry")
     lst=[]
     for usr in usrs:
-        if usr.person_id not in lst:
-            lst.append(usr.person_id)
-    print(lst)
-    add_to_primary(lst)
-    return lst
+        if usr.person_id not in blacklst:
+            lst.append(usr)
+            print("add to primary lst")
+            print(lst)
+    
+    add_to_primary(lst,1)
+    return [usr.person_id for usr in lst]
 
 
-def get_time(id):
+def get_time(id,blacklst):
     usrs=Visitor_List.query.filter_by(person_id=id).all()
     mail_lst=[]
     for usr in usrs:
@@ -86,10 +118,10 @@ def get_time(id):
         s_id=usr.shop_id
         fut=dt+timedelta(minutes = 30)
         pas=dt-timedelta(minutes = 30)
-        print(fut,pas)
-        tmp=short_list(fut,pas,id,s_id)
-        print("tmp")
-        print(tmp)
+        # print(fut,pas)
+        tmp=short_list(fut,pas,id,s_id,blacklst)
+        # print("tmp")
+        
 
         mail_lst.extend(tmp)
     print("mail_lst")
@@ -130,6 +162,8 @@ def csv_reader(x):
         reader = csv.reader(f)
         next(reader)
         for row in reader:
+            if row==[]:
+                continue
             lst.append(row)
     
     
@@ -175,20 +209,18 @@ def send_mail_health(usr,shid):
 def send_mail(lst):
     
     mail_lst=lst
-    print("Inside Send Mail")
+    print("Inside Send Mail to primary contacts")
     sent_people=[]
     
     with mail.connect() as conn:
         for usr in mail_lst:
-            print(usr)
+            
             person=Main_Table.query.filter(Main_Table.id==usr).first()
-            print(person.email)
-            print(type(person.email))
-            print(person.person_name)
+     
 
             if person.id not in sent_people:
                 msg = Message('Primary Contact', sender = 'tstflask@gmail.com', recipients = [person.email])
-                msg.body = f"""Dear {person.person_name},\nYou are a primary contact.Please stay inside your homes and follow the instructions provided by the health officials.\nFor further information contact\nhttps://www.mohfw.gov.in/ """
+                msg.body = f"""Dear {person.person_name},\nThis is a mail from the national health center.You have come into contact with a covid positive person in the last 14 days.\nHence you have been marked as a primary contact.Please stay inside your homes and follow the instructions provided by the health officials.\nFor further information contact\nhttps://www.mohfw.gov.in/ """
                 
                 conn.send(msg)
                 sent_people.append(person.id)

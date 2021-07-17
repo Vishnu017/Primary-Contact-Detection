@@ -2,8 +2,8 @@ from flask import Blueprint, render_template,request,redirect,url_for,flash
 from flask_login import login_required, current_user
 
 
-import pandas as pd
-from io import StringIO
+
+
 
 from .extra_function import  csv_reader,send_mail
 from . import routes
@@ -24,15 +24,24 @@ def profile():
         
         x=request.files["csv_file"]
         print(x.filename)
+        print(x)
+        
         print(type(x.filename))
         print(x.content_type)
         if x.filename!="" and x.filename.rsplit('.', 1)[1].lower()=='csv':
             print("enter")
             y=x.read().decode()
-            with open("file.txt",'w',newline='',) as f:
+            print(y)
+            print("file over")
+            with open("file.txt",'w',newline='') as f:
                 f.write(y)
-            
+            print(f)
             mail_lst=csv_reader("file.txt")
+            if mail_lst=="error":
+                flash('Please check your csv file .')
+                return render_template('profile.html', name=current_user.name)
+
+
             print(mail_lst)
             send_mail(mail_lst)
             return render_template('sumbit.html', name=current_user.name)
